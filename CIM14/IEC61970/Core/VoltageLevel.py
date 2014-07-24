@@ -24,12 +24,13 @@ class VoltageLevel(EquipmentContainer):
     """A collection of equipment at one common system voltage forming a switchgear. The equipment typically consist of breakers, busbars, instrumentation, control, regulation and protection devices as well as assemblies of all these.
     """
 
-    def __init__(self, highVoltageLimit=0.0, lowVoltageLimit=0.0, Substation=None, Bays=None, BaseVoltage=None, *args, **kw_args):
+    def __init__(self, highVoltageLimit=0.0, lowVoltageLimit=0.0, Substation=None, MemberOf_Substation=None, Bays=None, BaseVoltage=None, *args, **kw_args):
         """Initialises a new 'VoltageLevel' instance.
 
         @param highVoltageLimit: The bus bar's high voltage limit 
         @param lowVoltageLimit: The bus bar's low voltage limit 
         @param Substation: The association is used in the naming hierarchy.
+        @param MemberOf_Substation: Alias for Substation
         @param Bays: The association is used in the naming hierarchy.
         @param BaseVoltage: The base voltage used for all equipment within the VoltageLevel.
         """
@@ -41,6 +42,8 @@ class VoltageLevel(EquipmentContainer):
 
         self._Substation = None
         self.Substation = Substation
+        if MemberOf_Substation != None:
+            self.Substation = MemberOf_Substation
 
         self._Bays = []
         self.Bays = [] if Bays is None else Bays
@@ -54,7 +57,7 @@ class VoltageLevel(EquipmentContainer):
     _attr_types = {"highVoltageLimit": float, "lowVoltageLimit": float}
     _defaults = {"highVoltageLimit": 0.0, "lowVoltageLimit": 0.0}
     _enums = {}
-    _refs = ["Substation", "Bays", "BaseVoltage"]
+    _refs = ["Substation", "MemberOf_Substation", "Bays", "BaseVoltage"]
     _many_refs = ["Bays"]
 
     def getSubstation(self):
@@ -73,6 +76,7 @@ class VoltageLevel(EquipmentContainer):
                 self._Substation._VoltageLevels.append(self)
 
     Substation = property(getSubstation, setSubstation)
+    MemberOf_Substation = property(getSubstation, setSubstation)
 
     def getBays(self):
         """The association is used in the naming hierarchy.

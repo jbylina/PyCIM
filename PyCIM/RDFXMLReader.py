@@ -147,7 +147,15 @@ def cimread(source, packageMap=None, nsURI=None):
                             if uuid2 == None: # attribute
                                 # Convert value type using the default value.
                                 typ = type( getattr(obj, attr) )
-                                setattr(obj, attr, typ(elem.text))
+                                value = typ(elem.text)
+
+                                if typ == bool :
+                                    if elem.text == "true" or elem.text == "True":
+                                        value = True    
+                                    else:
+                                        value = False
+
+                                setattr(obj, attr, value)
                             else: # reference or enum
                                 # Use the '#' prefix to distinguish between
                                 # references and enumerations.

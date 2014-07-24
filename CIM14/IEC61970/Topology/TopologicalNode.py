@@ -24,9 +24,10 @@ class TopologicalNode(IdentifiedObject):
     """For a detailed substation model a TopologicalNode is a set of connectivity nodes that, in the current network state, are connected together through any type of closed switches, including  jumpers. Topological nodes changes as the current network state changes (i.e., switches, breakers, etc. change state). For a planning model switch statuses are not used to form TopologicalNodes. Instead they are manually created or deleted in a model builder tool. TopologialNodes maintained this way are also called 'busses'.
     """
 
-    def __init__(self, Terminal=None, TopologicalIsland=None, ReportingGroup=None, ConnectivityNodes=None, SvInjection=None, SvVoltage=None, SvShortCircuit=None, BaseVoltage=None, ConnectivityNodeContainer=None, AngleRef_TopologicalIsland=None, *args, **kw_args):
+    def __init__(self, equivalent = False, Terminal=None, TopologicalIsland=None, ReportingGroup=None, ConnectivityNodes=None, SvInjection=None, SvVoltage=None, SvShortCircuit=None, BaseVoltage=None, ConnectivityNodeContainer=None, AngleRef_TopologicalIsland=None, *args, **kw_args):
         """Initialises a new 'TopologicalNode' instance.
 
+        @param equivalent: TODO
         @param Terminal: The terminals associated with the topological node.   This can be used as an alternative to the connectivity node path to terminal, thus making it unneccesary to model connedtivity nodes in some cases.   Note that the if connectivity nodes are in the model, this association would proably not be used.
         @param TopologicalIsland: A topological node belongs to a topological island
         @param ReportingGroup: The reporting group to which the topological node belongs.
@@ -38,6 +39,8 @@ class TopologicalNode(IdentifiedObject):
         @param ConnectivityNodeContainer: The connectivity node container to which the toplogical node belongs.
         @param AngleRef_TopologicalIsland: The island for which the node is an angle reference.   Normally there is one angle reference node for each island.
         """
+        self.equivalent = equivalent
+
         self._Terminal = []
         self.Terminal = [] if Terminal is None else Terminal
 
@@ -70,9 +73,9 @@ class TopologicalNode(IdentifiedObject):
 
         super(TopologicalNode, self).__init__(*args, **kw_args)
 
-    _attrs = []
-    _attr_types = {}
-    _defaults = {}
+    _attrs = ["equivalent"]
+    _attr_types = {"equivalent": bool}
+    _defaults = {"equivalent": False}
     _enums = {}
     _refs = ["Terminal", "TopologicalIsland", "ReportingGroup", "ConnectivityNodes", "SvInjection", "SvVoltage", "SvShortCircuit", "BaseVoltage", "ConnectivityNodeContainer", "AngleRef_TopologicalIsland"]
     _many_refs = ["Terminal", "ConnectivityNodes"]

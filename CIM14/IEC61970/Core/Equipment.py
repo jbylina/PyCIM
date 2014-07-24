@@ -24,14 +24,16 @@ class Equipment(PowerSystemResource):
     """The parts of a power system that are physical devices, electronic or mechanical
     """
 
-    def __init__(self, normaIlyInService=False, aggregate=False, OperationalLimitSet=None, ContingencyEquipment=None, EquipmentContainer=None, CustomerAgreements=None, *args, **kw_args):
+    def __init__(self, normaIlyInService=False, aggregate=False, equivalent=False, OperationalLimitSet=None, ContingencyEquipment=None, EquipmentContainer=None, MemberOf_EquipmentContainer=None, CustomerAgreements=None, *args, **kw_args):
         """Initialises a new 'Equipment' instance.
 
         @param normaIlyInService: The equipment is normally in service. 
         @param aggregate: The single instance of equipment represents multiple pieces of equipment that have been modeled together as an aggregate.  Examples would be PowerTransformers or SychronousMachines operating in parallel modeled as a single aggregate PowerTransformer or aggregate SynchronousMachine.  This is not to be used to indicate equipment that is part of a group of interdependent equipment produced by a network production program. 
+        @param equivalent: TODO
         @param OperationalLimitSet: The equipment limit sets associated with the equipment.
         @param ContingencyEquipment: The contingency element associated with the equipment.
         @param EquipmentContainer: The association is used in the naming hierarchy.
+        @param MemberOf_EquipmentContainer: Alias for EquipmentContainer
         @param CustomerAgreements:
         """
         #: The equipment is normally in service.
@@ -39,6 +41,8 @@ class Equipment(PowerSystemResource):
 
         #: The single instance of equipment represents multiple pieces of equipment that have been modeled together as an aggregate.  Examples would be PowerTransformers or SychronousMachines operating in parallel modeled as a single aggregate PowerTransformer or aggregate SynchronousMachine.  This is not to be used to indicate equipment that is part of a group of interdependent equipment produced by a network production program.
         self.aggregate = aggregate
+
+        self.equivalent = equivalent
 
         self._OperationalLimitSet = []
         self.OperationalLimitSet = [] if OperationalLimitSet is None else OperationalLimitSet
@@ -48,15 +52,17 @@ class Equipment(PowerSystemResource):
 
         self._EquipmentContainer = None
         self.EquipmentContainer = EquipmentContainer
+        if MemberOf_EquipmentContainer != None:
+            self.EquipmentContainer = MemberOf_EquipmentContainer
 
         self._CustomerAgreements = []
         self.CustomerAgreements = [] if CustomerAgreements is None else CustomerAgreements
 
         super(Equipment, self).__init__(*args, **kw_args)
 
-    _attrs = ["normaIlyInService", "aggregate"]
-    _attr_types = {"normaIlyInService": bool, "aggregate": bool}
-    _defaults = {"normaIlyInService": False, "aggregate": False}
+    _attrs = ["normaIlyInService", "aggregate", "equivalent"]
+    _attr_types = {"normaIlyInService": bool, "aggregate": bool, "equivalent": bool}
+    _defaults = {"normaIlyInService": False, "aggregate": False, "equivalent": False}
     _enums = {}
     _refs = ["OperationalLimitSet", "ContingencyEquipment", "EquipmentContainer", "CustomerAgreements"]
     _many_refs = ["OperationalLimitSet", "ContingencyEquipment", "CustomerAgreements"]
@@ -121,6 +127,7 @@ class Equipment(PowerSystemResource):
                 self._EquipmentContainer._Equipments.append(self)
 
     EquipmentContainer = property(getEquipmentContainer, setEquipmentContainer)
+    MemberOf_EquipmentContainer = property(getEquipmentContainer, setEquipmentContainer)
 
     def getCustomerAgreements(self):
         

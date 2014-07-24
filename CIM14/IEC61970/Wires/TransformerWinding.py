@@ -24,7 +24,7 @@ class TransformerWinding(ConductingEquipment):
     """A winding is associated with each defined terminal of a transformer (or phase shifter).
     """
 
-    def __init__(self, connectionType="Yn", windingType="primary", x=0.0, grounded=False, g=0.0, r=0.0, x0=0.0, ratedU=0.0, ratedS=0.0, emergencyS=0.0, rground=0.0, shortTermS=0.0, r0=0.0, g0=0.0, insulationU=0.0, b=0.0, b0=0.0, xground=0.0, From_WindingTest=None, To_WindingTest=None, RatioTapChanger=None, PowerTransformer=None, PhaseTapChanger=None, *args, **kw_args):
+    def __init__(self, connectionType="Yn", windingType="primary", x=0.0, grounded=False, g=0.0, r=0.0, x0=0.0, ratedU=0.0, ratedS=0.0, emergencyS=0.0, rground=0.0, shortTermS=0.0, r0=0.0, g0=0.0, insulationU=0.0, b=0.0, b0=0.0, xground=0.0, From_WindingTest=None, To_WindingTest=None, RatioTapChanger=None, PowerTransformer=None, MemberOf_PowerTransformer=None, PhaseTapChanger=None, *args, **kw_args):
         """Initialises a new 'TransformerWinding' instance.
 
         @param connectionType: The type of connection of the winding. Values are: "Yn", "Y", "D", "I", "Z", "A", "Zn"
@@ -49,6 +49,7 @@ class TransformerWinding(ConductingEquipment):
         @param To_WindingTest: The winding winding tests for which the transformer winding (terminal) participates as the 'to' end of the test.
         @param RatioTapChanger: The ratio tap changer associated with the transformer winding.
         @param PowerTransformer: A transformer has windings
+        @param MemberOf_PowerTransformer: Alias for PowerTransformer
         @param PhaseTapChanger: The phase tap changer associated with the transformer winding.
         """
         #: The type of connection of the winding. Values are: "Yn", "Y", "D", "I", "Z", "A", "Zn"
@@ -116,6 +117,8 @@ class TransformerWinding(ConductingEquipment):
 
         self._PowerTransformer = None
         self.PowerTransformer = PowerTransformer
+        if MemberOf_PowerTransformer != None:
+            self.PowerTransformer = MemberOf_PowerTransformer
 
         self._PhaseTapChanger = None
         self.PhaseTapChanger = PhaseTapChanger
@@ -126,7 +129,7 @@ class TransformerWinding(ConductingEquipment):
     _attr_types = {"connectionType": str, "windingType": str, "x": float, "grounded": bool, "g": float, "r": float, "x0": float, "ratedU": float, "ratedS": float, "emergencyS": float, "rground": float, "shortTermS": float, "r0": float, "g0": float, "insulationU": float, "b": float, "b0": float, "xground": float}
     _defaults = {"connectionType": "Yn", "windingType": "primary", "x": 0.0, "grounded": False, "g": 0.0, "r": 0.0, "x0": 0.0, "ratedU": 0.0, "ratedS": 0.0, "emergencyS": 0.0, "rground": 0.0, "shortTermS": 0.0, "r0": 0.0, "g0": 0.0, "insulationU": 0.0, "b": 0.0, "b0": 0.0, "xground": 0.0}
     _enums = {"connectionType": "WindingConnection", "windingType": "WindingType"}
-    _refs = ["From_WindingTest", "To_WindingTest", "RatioTapChanger", "PowerTransformer", "PhaseTapChanger"]
+    _refs = ["From_WindingTest", "To_WindingTest", "RatioTapChanger", "PowerTransformer", "MemberOf_PowerTransformer", "PhaseTapChanger"]
     _many_refs = ["From_WindingTest", "To_WindingTest"]
 
     def getFrom_WindingTest(self):
@@ -205,6 +208,7 @@ class TransformerWinding(ConductingEquipment):
                 self._PowerTransformer._TransformerWindings.append(self)
 
     PowerTransformer = property(getPowerTransformer, setPowerTransformer)
+    MemberOf_PowerTransformer = property(getPowerTransformer, setPowerTransformer)
 
     def getPhaseTapChanger(self):
         """The phase tap changer associated with the transformer winding.
