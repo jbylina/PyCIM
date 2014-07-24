@@ -24,13 +24,14 @@ class TopologicalNode(IdentifiedObject):
     """For a detailed substation model a TopologicalNode is a set of connectivity nodes that, in the current network state, are connected together through any type of closed switches, including  jumpers. Topological nodes changes as the current network state changes (i.e., switches, breakers, etc. change state). For a planning model switch statuses are not used to form TopologicalNodes. Instead they are manually created or deleted in a model builder tool. TopologialNodes maintained this way are also called 'busses'.
     """
 
-    def __init__(self, equivalent = False, Terminal=None, TopologicalIsland=None, ReportingGroup=None, ConnectivityNodes=None, SvInjection=None, SvVoltage=None, SvShortCircuit=None, BaseVoltage=None, ConnectivityNodeContainer=None, AngleRef_TopologicalIsland=None, *args, **kw_args):
+    def __init__(self, equivalent = False, Terminal=None, TopologicalIsland=None, ReportingGroup=None,ControlArea=None, ConnectivityNodes=None, SvInjection=None, SvVoltage=None, SvShortCircuit=None, BaseVoltage=None, ConnectivityNodeContainer=None, AngleRef_TopologicalIsland=None, *args, **kw_args):
         """Initialises a new 'TopologicalNode' instance.
 
         @param equivalent: TODO
         @param Terminal: The terminals associated with the topological node.   This can be used as an alternative to the connectivity node path to terminal, thus making it unneccesary to model connedtivity nodes in some cases.   Note that the if connectivity nodes are in the model, this association would proably not be used.
         @param TopologicalIsland: A topological node belongs to a topological island
         @param ReportingGroup: The reporting group to which the topological node belongs.
+        @param ControlArea: The control area to which the topological node belongs.
         @param ConnectivityNodes: Several ConnectivityNode(s) may combine together to form a single TopologicalNode, depending on the current state of the network.
         @param SvInjection: The injection state associated with the topological node.
         @param SvVoltage: The state voltage associated with the topological node.
@@ -49,6 +50,9 @@ class TopologicalNode(IdentifiedObject):
 
         self._ReportingGroup = None
         self.ReportingGroup = ReportingGroup
+
+        self._ControlArea = None
+        self.ControlArea = ControlArea
 
         self._ConnectivityNodes = []
         self.ConnectivityNodes = [] if ConnectivityNodes is None else ConnectivityNodes
@@ -77,7 +81,7 @@ class TopologicalNode(IdentifiedObject):
     _attr_types = {"equivalent": bool}
     _defaults = {"equivalent": False}
     _enums = {}
-    _refs = ["Terminal", "TopologicalIsland", "ReportingGroup", "ConnectivityNodes", "SvInjection", "SvVoltage", "SvShortCircuit", "BaseVoltage", "ConnectivityNodeContainer", "AngleRef_TopologicalIsland"]
+    _refs = ["Terminal", "TopologicalIsland", "ReportingGroup", "ControlArea", "ConnectivityNodes", "SvInjection", "SvVoltage", "SvShortCircuit", "BaseVoltage", "ConnectivityNodeContainer", "AngleRef_TopologicalIsland"]
     _many_refs = ["Terminal", "ConnectivityNodes"]
 
     def getTerminal(self):
@@ -135,6 +139,24 @@ class TopologicalNode(IdentifiedObject):
                 self._ReportingGroup._TopologicalNode.append(self)
 
     ReportingGroup = property(getReportingGroup, setReportingGroup)
+
+    def getControlArea(self):
+        """The reporting group to which the topological node belongs.
+        """
+        return self._ControlArea
+
+    def setControlArea(self, value):
+        if self._ControlArea is not None:
+            filtered = [x for x in self.ControlArea.TopologicalNode if x != self]
+            self._ControlArea._TopologicalNode = filtered
+
+        self._ControlArea = value
+        if self._ControlArea is not None:
+            if self not in self._ControlArea._TopologicalNode:
+                self._ControlArea._TopologicalNode.append(self)
+
+    ControlArea = property(getControlArea, setControlArea)
+
 
     def getConnectivityNodes(self):
         """Several ConnectivityNode(s) may combine together to form a single TopologicalNode, depending on the current state of the network.

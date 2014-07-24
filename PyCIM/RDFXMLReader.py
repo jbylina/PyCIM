@@ -116,6 +116,12 @@ def cimread(source, packageMap=None, nsURI=None):
         # Process 'start' elements in the CIM namespace.
         if event == "start" and elem.tag[:m] == base:
             uuid = elem.get("{%s}ID" % ns_rdf)
+
+            if uuid == None:
+                uuid = elem.get("{%s}about" % ns_rdf)
+                if uuid != None:
+                    uuid = uuid[1:] #remove '#' prefix
+ 
             if uuid != None:
                 # Locate the CIM object using the uuid.
                 try:
@@ -131,7 +137,7 @@ def cimread(source, packageMap=None, nsURI=None):
                     # Process end events with elements in the CIM namespace.
                     if event == "end" and elem.tag[:m] == base:
                         # Break if class closing element (e.g. </cim:Terminal>).
-                        if elem.get("{%s}ID" % ns_rdf) == None:
+                        if elem.get("{%s}ID" % ns_rdf) == None and elem.get("{%s}about" % ns_rdf) == None:
                             # Get the attribute/reference name.
                             attr = elem.tag[m:].rsplit(".")[1]
 
